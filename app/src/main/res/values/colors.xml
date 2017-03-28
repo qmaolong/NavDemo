@@ -14,5 +14,10 @@
     <color name="itemlist">#f4f4f4</color>
     <color name="watermark_hint">#ccffffff</color>
     <color name="act_background">#efefef</color>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="lightgrey">#ECECEC</color>
+    <color name="lightlightgrey">#F1F1F1</color>
 
 </resources>

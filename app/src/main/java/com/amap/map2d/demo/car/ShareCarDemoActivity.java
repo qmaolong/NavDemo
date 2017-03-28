@@ -1,6 +1,7 @@
 package com.amap.map2d.demo.car;
 
 import android.app.Activity;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -21,11 +22,14 @@ import com.amap.api.maps2d.AMapOptions;
 import com.amap.api.maps2d.LocationSource;
 import com.amap.api.maps2d.MapView;
 import com.amap.api.maps2d.UiSettings;
+import com.amap.api.maps2d.model.BitmapDescriptorFactory;
 import com.amap.api.maps2d.model.CameraPosition;
 import com.amap.api.maps2d.model.LatLng;
 import com.amap.api.maps2d.model.Marker;
 import com.amap.api.maps2d.model.MarkerOptions;
 import com.amap.map2d.demo.R;
+import com.amap.map2d.demo.lib.LocationTask;
+import com.amap.map2d.demo.lib.RegeocodeTask;
 import com.amap.map2d.demo.util.ToastUtil;
 
 /**
@@ -33,7 +37,7 @@ import com.amap.map2d.demo.util.ToastUtil;
  */
 public class ShareCarDemoActivity extends Activity implements
         OnCheckedChangeListener, OnClickListener, LocationSource,
-        AMapLocationListener, AMap.OnMapClickListener,
+        AMapLocationListener,AMap.OnMapLoadedListener,  AMap.OnMapClickListener,
         AMap.OnMapLongClickListener, AMap.OnCameraChangeListener {
     private AMap aMap;
     private MapView mapView;
@@ -42,6 +46,9 @@ public class ShareCarDemoActivity extends Activity implements
     private AMapLocationClient mlocationClient;
     private AMapLocationClientOption mLocationOption;
     private TextView currentLocationView;
+    private Marker mPositionMark;
+    private RegeocodeTask mRegeocodeTask;
+    private LocationTask mLocationTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +69,7 @@ public class ShareCarDemoActivity extends Activity implements
             mUiSettings = aMap.getUiSettings();
             mUiSettings.setMyLocationButtonEnabled(true);
 
+            aMap.setOnMapLoadedListener(this);
             aMap.setLocationSource(this);// 设置定位监听
             mUiSettings.setMyLocationButtonEnabled(true); // 是否显示默认的定位按钮
             aMap.setMyLocationEnabled(true);// 是否可触发定位并显示定位层
@@ -262,6 +270,24 @@ public class ShareCarDemoActivity extends Activity implements
         mlocationClient = null;
     }
 
+    @Override
+    public void onMapLoaded() {
+
+        MarkerOptions markerOptions = new MarkerOptions();
+//        markerOptions.setFlat(true);
+        markerOptions.anchor(0.5f, 0.5f);
+        markerOptions.position(new LatLng(0, 0));
+        markerOptions
+                .icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory
+                        .decodeResource(getResources(),
+                                R.drawable.icon_loaction_start)));
+        mPositionMark = aMap.addMarker(markerOptions);
+
+        mPositionMark.setPositionByPixels(mapView.getWidth() / 2,
+                mapView.getHeight() / 2);
+        mLocationTask.startSingleLocate();
+    }
+
     /**
      * 对单击地图事件回调
      */
@@ -293,9 +319,10 @@ public class ShareCarDemoActivity extends Activity implements
      */
     @Override
     public void onCameraChangeFinish(CameraPosition cameraPosition) {
-//        currentLocationView.setText("onCameraChangeFinish:"
-//                + cameraPosition.toString());
-//        VisibleRegion visibleRegion = aMap.getProjection().getVisibleRegion(); // 获取可视区域、
-//        LatLngBounds latLngBounds = visibleRegion.latLngBounds;// 获取可视区域的Bounds
+        /*currentLocationView.setText("onCameraChangeFinish:"
+                + cameraPosition.toString());
+        VisibleRegion visibleRegion = aMap.getProjection().getVisibleRegion(); // 获取可视区域、
+        LatLngBounds latLngBounds = visibleRegion.latLngBounds;// 获取可视区域的Bounds*/
+        currentLocationView.setText("中心位置：" + "(" + cameraPosition.target.latitude + "," + cameraPosition.target.longitude + ")");
     }
 }
