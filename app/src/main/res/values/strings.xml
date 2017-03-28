@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="animate">Animate</string>
-    <string name="share_car_demo">共享汽车Demo</string>
-    <string name="share_car_desc">共享汽车地图模型</string>
+    <string name="animate">模拟显示附近可用车</string>
+    <string name="share_car_demo">共享电动车Demo</string>
+    <string name="share_car_desc">共享电动车地图模型</string>
     <string name="basic_map">基本地图</string>
     <string name="basic_description">介绍如何创建一个基本地图</string>
     <string name="osm_map">OSM地图</string>
@@ -151,6 +151,7 @@
     <string name="report_time">发布时间</string>
     <string name="sydney">悉尼</string>
     <string name="beijing">北京</string>
+    <string name="currentLocation">当前位置</string>
 
     
     

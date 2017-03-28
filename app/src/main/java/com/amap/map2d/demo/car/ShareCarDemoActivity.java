@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
+import android.widget.TextView;
 
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
@@ -20,6 +21,10 @@ import com.amap.api.maps2d.AMapOptions;
 import com.amap.api.maps2d.LocationSource;
 import com.amap.api.maps2d.MapView;
 import com.amap.api.maps2d.UiSettings;
+import com.amap.api.maps2d.model.CameraPosition;
+import com.amap.api.maps2d.model.LatLng;
+import com.amap.api.maps2d.model.Marker;
+import com.amap.api.maps2d.model.MarkerOptions;
 import com.amap.map2d.demo.R;
 import com.amap.map2d.demo.util.ToastUtil;
 
@@ -28,13 +33,15 @@ import com.amap.map2d.demo.util.ToastUtil;
  */
 public class ShareCarDemoActivity extends Activity implements
         OnCheckedChangeListener, OnClickListener, LocationSource,
-        AMapLocationListener {
+        AMapLocationListener, AMap.OnMapClickListener,
+        AMap.OnMapLongClickListener, AMap.OnCameraChangeListener {
     private AMap aMap;
     private MapView mapView;
     private UiSettings mUiSettings;
     private OnLocationChangedListener mListener;
     private AMapLocationClient mlocationClient;
     private AMapLocationClientOption mLocationOption;
+    private TextView currentLocationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +49,7 @@ public class ShareCarDemoActivity extends Activity implements
         setContentView(R.layout.share_car_demo);
         mapView = (MapView) findViewById(R.id.map);
         mapView.onCreate(savedInstanceState);// 此方法必须重写
+        currentLocationView = (TextView) findViewById(R.id.current_location);
         init();
     }
 
@@ -57,6 +65,8 @@ public class ShareCarDemoActivity extends Activity implements
             aMap.setLocationSource(this);// 设置定位监听
             mUiSettings.setMyLocationButtonEnabled(true); // 是否显示默认的定位按钮
             aMap.setMyLocationEnabled(true);// 是否可触发定位并显示定位层
+
+            setUpMap();
         }
         Button buttonScale = (Button) findViewById(R.id.buttonScale);
         buttonScale.setOnClickListener(this);
@@ -75,6 +85,15 @@ public class ShareCarDemoActivity extends Activity implements
         RadioGroup radioGroup = (RadioGroup) findViewById(R.id.logo_position);
         radioGroup.setOnCheckedChangeListener(this);
 
+    }
+
+    /**
+     * amap添加一些事件监听器
+     */
+    private void setUpMap() {
+        aMap.setOnMapClickListener(this);// 对amap添加单击地图事件监听器
+        aMap.setOnMapLongClickListener(this);// 对amap添加长按地图事件监听器
+        aMap.setOnCameraChangeListener(this);// 对amap添加移动地图事件监听器
     }
 
     /**
@@ -198,6 +217,7 @@ public class ShareCarDemoActivity extends Activity implements
             if (amapLocation != null
                     && amapLocation.getErrorCode() == 0) {
                 mListener.onLocationChanged(amapLocation);// 显示系统小蓝点
+                final Marker marker = aMap.addMarker(new MarkerOptions().position(new LatLng(amapLocation.getLatitude(), amapLocation.getLongitude())).title("当前位置").snippet("DefaultMarker"));
             } else {
                 String errText = "定位失败," + amapLocation.getErrorCode()+ ": " + amapLocation.getErrorInfo();
                 Log.e("AmapErr",errText);
@@ -218,6 +238,7 @@ public class ShareCarDemoActivity extends Activity implements
             mlocationClient.setLocationListener(this);
             //设置为高精度定位模式
             mLocationOption.setLocationMode(AMapLocationMode.Hight_Accuracy);
+            mLocationOption.setMockEnable(true);
             //设置定位参数
             mlocationClient.setLocationOption(mLocationOption);
             // 此方法为每隔固定时间会发起一次定位请求，为了减少电量消耗或网络流量消耗，
@@ -239,5 +260,42 @@ public class ShareCarDemoActivity extends Activity implements
             mlocationClient.onDestroy();
         }
         mlocationClient = null;
+    }
+
+    /**
+     * 对单击地图事件回调
+     */
+    @Override
+    public void onMapClick(LatLng point) {
+        currentLocationView.setText("选中位置：" + "(" + point.latitude + "," + point.longitude + ")");
+        final Marker marker = aMap.addMarker(new MarkerOptions().position(point).title("选中位置").snippet("DefaultMarker"));
+
+    }
+
+    /**
+     * 对长按地图事件回调
+     */
+    @Override
+    public void onMapLongClick(LatLng point) {
+        currentLocationView.setText("选中位置：" + "(" + point.latitude + "," + point.longitude + ")");
+    }
+
+    /**
+     * 对正在移动地图事件回调
+     */
+    @Override
+    public void onCameraChange(CameraPosition cameraPosition) {
+//        currentLocationView.setText("onCameraChange:" + cameraPosition.toString());
+    }
+
+    /**
+     * 对移动地图结束事件回调
+     */
+    @Override
+    public void onCameraChangeFinish(CameraPosition cameraPosition) {
+//        currentLocationView.setText("onCameraChangeFinish:"
+//                + cameraPosition.toString());
+//        VisibleRegion visibleRegion = aMap.getProjection().getVisibleRegion(); // 获取可视区域、
+//        LatLngBounds latLngBounds = visibleRegion.latLngBounds;// 获取可视区域的Bounds
     }
 }
