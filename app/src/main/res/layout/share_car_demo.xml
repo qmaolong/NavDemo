@@ -14,13 +14,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
-            <ToggleButton
+            <!--<ToggleButton
                 android:id="@+id/animate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checked="true"
                 android:textOff="@string/animate"
-                android:textOn="@string/animate" />
+                android:textOn="@string/animate" />-->
             <TextView
                 android:id="@+id/current_location"
                 android:layout_width="wrap_content"

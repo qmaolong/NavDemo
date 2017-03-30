@@ -30,6 +30,7 @@ import com.amap.api.maps2d.model.MarkerOptions;
 import com.amap.map2d.demo.R;
 import com.amap.map2d.demo.lib.LocationTask;
 import com.amap.map2d.demo.lib.RegeocodeTask;
+import com.amap.map2d.demo.lib.Utils;
 import com.amap.map2d.demo.util.ToastUtil;
 
 /**
@@ -225,7 +226,8 @@ public class ShareCarDemoActivity extends Activity implements
             if (amapLocation != null
                     && amapLocation.getErrorCode() == 0) {
                 mListener.onLocationChanged(amapLocation);// 显示系统小蓝点
-                final Marker marker = aMap.addMarker(new MarkerOptions().position(new LatLng(amapLocation.getLatitude(), amapLocation.getLongitude())).title("当前位置").snippet("DefaultMarker"));
+//                final Marker marker = aMap.addMarker(new MarkerOptions().position(new LatLng(amapLocation.getLatitude(), amapLocation.getLongitude())).title("当前位置").snippet("DefaultMarker"));
+                Utils.addEmulateData(aMap, new LatLng(amapLocation.getLatitude(), amapLocation.getLongitude()));
             } else {
                 String errText = "定位失败," + amapLocation.getErrorCode()+ ": " + amapLocation.getErrorInfo();
                 Log.e("AmapErr",errText);
@@ -282,7 +284,6 @@ public class ShareCarDemoActivity extends Activity implements
                         .decodeResource(getResources(),
                                 R.drawable.icon_loaction_start)));
         mPositionMark = aMap.addMarker(markerOptions);
-
         mPositionMark.setPositionByPixels(mapView.getWidth() / 2,
                 mapView.getHeight() / 2);
         mLocationTask.startSingleLocate();
@@ -294,7 +295,7 @@ public class ShareCarDemoActivity extends Activity implements
     @Override
     public void onMapClick(LatLng point) {
         currentLocationView.setText("选中位置：" + "(" + point.latitude + "," + point.longitude + ")");
-        final Marker marker = aMap.addMarker(new MarkerOptions().position(point).title("选中位置").snippet("DefaultMarker"));
+//        final Marker marker = aMap.addMarker(new MarkerOptions().position(point).title("选中位置").snippet("DefaultMarker"));
 
     }
 
@@ -323,6 +324,8 @@ public class ShareCarDemoActivity extends Activity implements
                 + cameraPosition.toString());
         VisibleRegion visibleRegion = aMap.getProjection().getVisibleRegion(); // 获取可视区域、
         LatLngBounds latLngBounds = visibleRegion.latLngBounds;// 获取可视区域的Bounds*/
+        mlocationClient.stopLocation();
         currentLocationView.setText("中心位置：" + "(" + cameraPosition.target.latitude + "," + cameraPosition.target.longitude + ")");
+        Utils.addEmulateData(aMap, new LatLng(cameraPosition.target.latitude, cameraPosition.target.longitude));
     }
 }
